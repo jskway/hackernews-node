@@ -1,54 +1,51 @@
 const { GraphQLServer } = require("graphql-yoga");
+const { PrismaClient } = require("@prisma/client");
 
-// Dummy data
-let links = [
-  {
-    id: "link-0",
-    url: "www.howtographql.com",
-    description: "Fullstack tutorial for GraphQL",
-  },
-];
+// Creating an instance of our auto-generated query builder
+const prisma = new PrismaClient();
 
-let idCount = links.length;
-// the `resolvers` object is the actual implementation of the GraphQL Schema
+// The `resolvers` object is the actual implementation of the GraphQL Schema
 const resolvers = {
   Query: {
     info: () => `This is the API of a Hackernews Clone`,
-    feed: () => links,
-    link: (parent, args) => links.find((link) => link.id === args.id),
+    feed: async (parent, args, context) => {
+      return context.prisma.link.findMany();
+    },
+    link: async (parent, args, context) => {
+      return context.prisma.link.findUnique({
+        where: {
+          id: Number(args.id),
+        },
+      });
+    },
   },
   Mutation: {
-    post: (parent, args) => {
-      const link = {
-        id: `link-${idCount++}`,
-        description: args.description,
-        url: args.url,
-      };
-
-      links.push(link);
-      return link;
+    post: async (parent, args, context, info) => {
+      const newLink = await context.prisma.link.create({
+        data: {
+          description: args.description,
+          url: args.url,
+        },
+      });
+      return newLink;
     },
-    updateLink: (parent, args) => {
-      const linkIdx = links.findIndex((link) => link.id === args.id);
+    updateLink: async (parent, args, context, info) => {
+      const updatedLink = await context.prisma.link.update({
+        where: { id: Number(args.id) },
+        data: {
+          url: args.url,
+          description: args.description,
+        },
+      });
 
-      if (linkIdx === -1) {
-        return undefined;
-      }
-
-      links[linkIdx].url = args.url;
-      links[linkIdx].description = args.description;
-
-      return links[linkIdx];
+      return updatedLink;
     },
-    deleteLink: (parent, args) => {
-      const linkIdx = links.findIndex((link) => link.id === args.id);
+    deleteLink: async (parent, args, context, info) => {
+      const deletedLink = await context.prisma.link.delete({
+        where: { id: Number(args.id) },
+      });
 
-      if (linkIdx === -1) {
-        return undefined;
-      }
-
-      const deletedLink = links.splice(linkIdx, 1);
-      return deletedLink[0];
+      return deletedLink;
     },
   },
 };
@@ -56,9 +53,14 @@ const resolvers = {
 // The schema and resolvers are bundled and passed to the `GraphQLServer`.  This
 // tells the server what API operations are accepted and how they should be
 // resolved.
+// We're also attaching an instance of PrismaClient (as prisma) to the context
+// object, which allows us to access context.prisma in all of our resolvers
 const server = new GraphQLServer({
   typeDefs: "./src/schema.graphql",
   resolvers,
+  context: {
+    prisma,
+  },
 });
 
 server.start(() => console.log(`Server is running on http://localhost:4000`));
