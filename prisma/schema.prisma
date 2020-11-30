@@ -1,0 +1,21 @@
+// Data source: Tells Prisma you'll be using SQLite for your db connection
+datasource db {
+  provider = "sqlite"
+	url      = "file:./dev.db"
+}
+
+// Generator: Indicates that you want to generate Prisma client
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Data model: Here we have written out our `Link` as a model
+model Link {
+  id          Int       @id @default(autoincrement())
+	createdAt   DateTime  @default(now())
+	description String
+	url         String
+}
+
+// The `Link` model defines the structure of the Link database table that Prisma
+// will create
