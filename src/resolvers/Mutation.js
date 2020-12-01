@@ -90,7 +90,7 @@ async function deleteLink(parent, args, context, info) {
   });
 
   if (Link.postedById !== userId) {
-    throw new Error("Not authorized to update this Link");
+    throw new Error("Not authorized to delete this Link");
   }
 
   const deletedLink = await context.prisma.link.delete({
