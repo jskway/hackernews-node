@@ -1,7 +1,7 @@
 // Config .env vars
 require("dotenv").config();
 
-const { GraphQLServer } = require("graphql-yoga");
+const { GraphQLServer, PubSub } = require("graphql-yoga");
 const { PrismaClient } = require("@prisma/client");
 
 // Resolvers
@@ -9,16 +9,22 @@ const Query = require("./resolvers/Query");
 const Mutation = require("./resolvers/Mutation");
 const User = require("./resolvers/User");
 const Link = require("./resolvers/Link");
+const Vote = require("./resolvers/Vote");
+const Subscription = require("./resolvers/Subscription");
 
 // Creating an instance of our auto-generated query builder
 const prisma = new PrismaClient();
+
+const pubsub = new PubSub();
 
 // The `resolvers` object is the actual implementation of the GraphQL Schema
 const resolvers = {
   Query,
   Mutation,
+  Subscription,
   User,
   Link,
+  Vote,
 };
 
 // The schema and resolvers are bundled and passed to the `GraphQLServer`.  This
@@ -33,6 +39,7 @@ const server = new GraphQLServer({
     return {
       ...request,
       prisma,
+      pubsub,
     };
   },
 });
