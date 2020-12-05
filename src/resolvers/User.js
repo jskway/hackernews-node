@@ -1,6 +1,6 @@
 function links(parent, args, context) {
   return context.prisma.user
-    .findOne({
+    .findUnique({
       where: { id: parent.id },
     })
     .links();
