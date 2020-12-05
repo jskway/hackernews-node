@@ -1,12 +1,21 @@
 type Query {
   info: String!
-  feed(filter: String, skip: Int, take: Int, orderBy: LinkOrderByInput): Feed!
+  feed(
+    filter: String
+    skip: Int 
+    take: Int 
+    orderBy: LinkOrderByInput
+  ): Feed!
   link(id: ID!): Link
 }
 
 type Mutation {
   post(url: String!, description: String!): Link!
-  signup(email: String!, password: String!, name: String!): AuthPayload
+  signup(
+    email: String! 
+    password: String!
+    name: String!
+  ): AuthPayload
   login(email: String!, password: String!): AuthPayload
   updateLink(id: ID!, url: String, description: String): Link
   deleteLink(id: ID!): Link
@@ -59,3 +68,5 @@ enum Sort {
   asc
   desc
 }
+
+scalar DateTime
