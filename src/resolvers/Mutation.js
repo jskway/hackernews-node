@@ -1,6 +1,6 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { APP_SECRET, getUserId } = require("../utils");
+const { APP_SECRET } = require("../utils");
 
 async function signup(parent, args, context, info) {
   const password = await bcrypt.hash(args.password, 10);
@@ -39,9 +39,9 @@ async function login(parent, args, context, info) {
 }
 
 async function post(parent, args, context, info) {
-  const userId = getUserId(context);
+  const { userId } = context;
 
-  const newLink = context.prisma.link.create({
+  const newLink = await context.prisma.link.create({
     data: {
       description: args.description,
       url: args.url,
@@ -54,7 +54,7 @@ async function post(parent, args, context, info) {
 }
 
 async function updateLink(parent, args, context, info) {
-  const userId = getUserId(context);
+  const { userId } = context;
 
   const Link = await context.prisma.link.findUnique({
     where: {
@@ -81,7 +81,7 @@ async function updateLink(parent, args, context, info) {
 }
 
 async function deleteLink(parent, args, context, info) {
-  const userId = getUserId(context);
+  const { userId } = context;
 
   const Link = await context.prisma.link.findUnique({
     where: {
@@ -102,7 +102,7 @@ async function deleteLink(parent, args, context, info) {
 }
 
 async function vote(parent, args, context, info) {
-  const userId = getUserId(context);
+  const { userId } = context;
 
   const vote = await context.prisma.vote.findUnique({
     where: {
