@@ -2,6 +2,9 @@ function info() {
   return `This is the API of a Hackernews Clone`;
 }
 
+// The `parent` arg is the result of the previous resolver execution level.
+// GraphQL queries can be nested.  Each level of nesting corresponds to
+// one resolver execution level.
 async function feed(parent, args, context, info) {
   // If no `filter` string is provided, then `where` will just be an empty
   // object

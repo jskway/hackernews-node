@@ -17,7 +17,9 @@ const path = require("path");
 
 const { getUserId } = require("./utils");
 
-// Creating an instance of our auto-generated query builder
+// Prisma Client exposes a CRUD API for the models in your data model
+// for you to read and write in your database.  These methods are auto-generated
+// based on your model definitions in schema.prisma
 const prisma = new PrismaClient();
 
 const pubsub = new PubSub();
@@ -40,6 +42,8 @@ const resolvers = {
 const server = new ApolloServer({
   typeDefs: fs.readFileSync(path.join(__dirname, "schema.graphql"), "utf8"),
   resolvers,
+  // This function is called with every request, so you can set the context
+  // based on the request's details
   context: ({ req }) => {
     return {
       ...req,
